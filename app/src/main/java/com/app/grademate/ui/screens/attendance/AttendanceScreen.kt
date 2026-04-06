@@ -34,8 +34,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -78,19 +76,19 @@ fun AttendanceScreen(
         else -> "Safe"
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF8FAFC))
-    ) {
-        AppTopBarWrapper(
-            title = "Attendance Tracker",
-            onBackClick = { navController.popBackStack() }
-        )
-
+    Scaffold(
+        topBar = {
+            AppTopBarWrapper(
+                title = "Attendance Tracker",
+                onBackClick = { navController.popBackStack() }
+            )
+        },
+        containerColor = Color(0xFFF8FAFC)
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(innerPadding)
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally

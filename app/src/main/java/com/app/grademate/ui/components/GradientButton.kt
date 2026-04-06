@@ -85,7 +85,7 @@ fun GradientButton(
                 text = text,
                 color = Color.White,
                 fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.SemiBold
             )
         }
     }

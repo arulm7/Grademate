@@ -33,6 +33,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -61,19 +62,19 @@ fun CgpaScreen(
     val errorMessage by viewModel.errorMessage.collectAsState()
     val lastCgpa by viewModel.lastCgpa.collectAsState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF8FAFC))
-    ) {
-        AppTopBarWrapper(
-            title = "CGPA Calculator",
-            onBackClick = { navController.popBackStack() }
-        )
-
+    Scaffold(
+        topBar = {
+            AppTopBarWrapper(
+                title = "CGPA Calculator",
+                onBackClick = { navController.popBackStack() }
+            )
+        },
+        containerColor = Color(0xFFF8FAFC)
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(innerPadding)
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {

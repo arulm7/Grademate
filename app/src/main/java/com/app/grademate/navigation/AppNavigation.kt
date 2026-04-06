@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -13,6 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.app.grademate.datastore.DataStoreManager
+import com.app.grademate.ui.components.AppTopBarWrapper
 import com.app.grademate.ui.components.FloatingBottomBar
 import com.app.grademate.ui.screens.attendance.AttendanceScreen
 import com.app.grademate.ui.screens.attendance.AttendanceViewModel
@@ -74,7 +78,17 @@ fun AppNavigation(
             val historyViewModel = remember { HistoryViewModel(dataStoreManager) }
             val profileViewModel = remember { ProfileViewModel(dataStoreManager) }
 
+            val currentTitle = when (pagerState.targetPage) {
+                0 -> "GradeMate"
+                1 -> "History"
+                2 -> "Profile"
+                else -> ""
+            }
+
             Scaffold(
+                topBar = {
+                    AppTopBarWrapper(title = currentTitle)
+                },
                 bottomBar = {
                     FloatingBottomBar(
                         selectedIndex = pagerState.currentPage,
@@ -85,17 +99,18 @@ fun AppNavigation(
                             }
                         },
                         onDrag = { delta ->
-                            pagerState.dispatchRawDelta(delta)
+                            coroutineScope.launch {
+                                // Apply a multiplier to make dragging more responsive
+                                // Pager width is much larger than the bottom bar
+                                val multiplier = 3f 
+                                pagerState.scroll {
+                                    scrollBy(-delta * multiplier)
+                                }
+                            }
                         },
                         onDragStopped = {
                             coroutineScope.launch {
-                                val offset = pagerState.currentPageOffsetFraction
-                                val targetPage = when {
-                                    offset > 0.2f -> pagerState.currentPage + 1
-                                    offset < -0.2f -> pagerState.currentPage - 1
-                                    else -> pagerState.currentPage
-                                }
-                                pagerState.animateScrollToPage(targetPage.coerceIn(0, 2))
+                                pagerState.animateScrollToPage(pagerState.targetPage)
                             }
                         }
                     )
@@ -104,7 +119,7 @@ fun AppNavigation(
 
                 HorizontalPager(
                     state = pagerState,
-                    userScrollEnabled = false,
+                    userScrollEnabled = true,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)

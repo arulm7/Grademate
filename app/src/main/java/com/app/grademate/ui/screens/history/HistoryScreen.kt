@@ -53,8 +53,6 @@ fun HistoryScreen(
             .background(Color(0xFFF8FAFC))
             .padding(16.dp)
     ) {
-        AppTopBarWrapper(title = "History")
-
         Spacer(modifier = Modifier.height(16.dp))
 
         Crossfade(targetState = historyItems.isEmpty(), label = "history_crossfade") { isEmpty ->

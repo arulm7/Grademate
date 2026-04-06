@@ -45,11 +45,6 @@ fun ProfileScreen(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        AppTopBarWrapper(
-            title = "Profile",
-            onBackClick = { navController.popBackStack() },
-        )
-
         Spacer(modifier = Modifier.height(24.dp))
 
             Card(

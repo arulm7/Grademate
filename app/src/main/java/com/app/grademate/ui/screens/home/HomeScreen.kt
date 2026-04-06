@@ -46,8 +46,6 @@ fun HomeScreen(
             .background(Color(0xFFF8FAFC))
             .padding(16.dp)
     ) {
-        AppTopBarWrapper(title = "GradeMate")
-
         Spacer(modifier = Modifier.height(16.dp))
         
         val displayName = userName.ifBlank { "Student" }

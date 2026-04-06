@@ -80,7 +80,7 @@ fun FloatingBottomBar(
             if (itemBounds.none { it == Rect.Zero }) {
                 val floatIndex = pagerOffset.coerceIn(0f, 2f)
                 val lowerIndex = floatIndex.toInt()
-                val upperIndex = minOf(lowerIndex + 1, 2)
+                val upperIndex = (lowerIndex + 1).coerceAtMost(2)
                 val fraction = floatIndex - lowerIndex
 
                 val startLeft = itemBounds[lowerIndex].left
@@ -91,17 +91,27 @@ fun FloatingBottomBar(
                 val left = lerp(startLeft, endLeft, fraction)
                 val right = lerp(startRight, endRight, fraction)
                 val width = right - left
+                
+                val density = LocalDensity.current
+                val verticalPadding = with(density) { 10.dp.toPx() }
+                val iconHeight = with(density) { 24.dp.toPx() }
+                val pillHeight = with(density) { 38.dp.toPx() } // Slightly larger than icon + some padding
+
+                // Align pill vertically to be centered with the icon
+                // Icon top relative to item is verticalPadding
+                val iconTop = itemBounds[0].top + verticalPadding
+                val topOffset = iconTop + (iconHeight - pillHeight) / 2
 
                 Box(
                     modifier = Modifier
-                        .offset { IntOffset(left.roundToInt(), itemBounds[0].top.roundToInt()) }
+                        .offset { IntOffset(left.roundToInt(), topOffset.roundToInt()) }
                         .size(
-                            width = with(LocalDensity.current) { width.toDp() },
-                            height = with(LocalDensity.current) { itemBounds[0].height.toDp() }
+                            width = with(density) { width.toDp() },
+                            height = with(density) { pillHeight.toDp() }
                         )
                         .background(
                             brush = Brush.horizontalGradient(listOf(BlueLight, BlueSky)),
-                            shape = RoundedCornerShape(50)
+                            shape = RoundedCornerShape(24.dp)
                         )
                 )
             }

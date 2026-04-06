@@ -2,9 +2,11 @@ package com.app.grademate.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -86,7 +88,8 @@ fun AppTopBar(
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = Color.White,
             scrolledContainerColor = Color.White
-        )
+        ),
+        windowInsets = TopAppBarDefaults.windowInsets
     )
 }
 
@@ -96,7 +99,6 @@ fun AppTopBarWrapper(
     onBackClick: (() -> Unit)? = null,
     showProfileAvatar: Boolean = false
 ) {
-    // We removed the gradient background to make it clean and modern
     AppTopBar(
         title = title,
         onBackClick = onBackClick,
