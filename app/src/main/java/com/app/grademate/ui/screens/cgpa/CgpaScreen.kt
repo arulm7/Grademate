@@ -1,48 +1,30 @@
 package com.app.grademate.ui.screens.cgpa
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.material3.Scaffold
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.app.grademate.ui.components.AppTopBarWrapper
 import com.app.grademate.ui.components.GradientButton
+import com.app.grademate.ui.theme.BlueSky
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,14 +32,9 @@ fun CgpaScreen(
     navController: NavController,
     viewModel: CgpaViewModel
 ) {
-    val gradeS by viewModel.gradeS.collectAsState()
-    val gradeA by viewModel.gradeA.collectAsState()
-    val gradeB by viewModel.gradeB.collectAsState()
-    val gradeC by viewModel.gradeC.collectAsState()
-    val gradeD by viewModel.gradeD.collectAsState()
-    val gradeE by viewModel.gradeE.collectAsState()
-
+    val subjects by viewModel.subjects.collectAsState()
     val totalSubjects by viewModel.totalSubjects.collectAsState()
+    val totalCredits by viewModel.totalCredits.collectAsState()
     val calculatedCgpa by viewModel.calculatedCgpa.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
     val lastCgpa by viewModel.lastCgpa.collectAsState()
@@ -75,78 +52,118 @@ fun CgpaScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 20.dp)
         ) {
+            Spacer(modifier = Modifier.height(16.dp))
             
+            // Header Info
             Row(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Last Calculated CGPA: " + String.format("%.2f", lastCgpa),
-                    color = Color.Gray,
-                    fontSize = 14.sp,
-                    modifier = Modifier.weight(1f)
-                )
-
-                Text(
-                    text = "Total Subjects: $totalSubjects",
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 14.sp
-                )
-            }
-
-            // Grade Counters
-            GradeCounterRow(grade = "S", point = 10, count = gradeS, onIncrement = { viewModel.updateGradeCount("S", 1) }, onDecrement = { viewModel.updateGradeCount("S", -1) })
-            GradeCounterRow(grade = "A", point = 9, count = gradeA, onIncrement = { viewModel.updateGradeCount("A", 1) }, onDecrement = { viewModel.updateGradeCount("A", -1) })
-            GradeCounterRow(grade = "B", point = 8, count = gradeB, onIncrement = { viewModel.updateGradeCount("B", 1) }, onDecrement = { viewModel.updateGradeCount("B", -1) })
-            GradeCounterRow(grade = "C", point = 7, count = gradeC, onIncrement = { viewModel.updateGradeCount("C", 1) }, onDecrement = { viewModel.updateGradeCount("C", -1) })
-            GradeCounterRow(grade = "D", point = 6, count = gradeD, onIncrement = { viewModel.updateGradeCount("D", 1) }, onDecrement = { viewModel.updateGradeCount("D", -1) })
-            GradeCounterRow(grade = "E", point = 5, count = gradeE, onIncrement = { viewModel.updateGradeCount("E", 1) }, onDecrement = { viewModel.updateGradeCount("E", -1) })
-
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            errorMessage?.let { errorMsg ->
-                Text(
-                    text = errorMsg,
-                    color = Color.Red,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                androidx.compose.material3.OutlinedButton(
-                    onClick = { viewModel.reset() },
-                    modifier = Modifier.weight(0.3f).height(56.dp),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Text("Reset")
+                Column {
+                    Text(text = "Summary", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.DarkGray)
+                    Text(
+                        text = "Last: ${String.format("%.2f", lastCgpa)}",
+                        fontSize = 12.sp,
+                        color = Color.Gray
+                    )
                 }
                 
-                Spacer(modifier = Modifier.width(16.dp))
-                
-                GradientButton(
-                    text = "Calculate CGPA",
-                    onClick = { viewModel.calculateCgpa() },
-                    modifier = Modifier.weight(0.7f)
-                )
+                Surface(
+                    color = BlueSky.copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)) {
+                        Text(text = "Credits: ", fontSize = 14.sp, color = Color.Gray)
+                        Text(text = "$totalCredits", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = BlueSky)
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Quick Add Grades
+            Text(text = "Add Subjects", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.Gray)
+            Spacer(modifier = Modifier.height(10.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                listOf("S", "A", "B", "C", "D", "E").forEach { grade ->
+                    GradePickItem(grade = grade, onClick = { viewModel.addSubject(grade) })
+                }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            AnimatedVisibility(
-                visible = calculatedCgpa != null,
-                enter = fadeIn() + slideInVertically(initialOffsetY = { 50 }),
-                exit = fadeOut() + slideOutVertically(targetOffsetY = { 50 })
+            // Subject List
+            Box(modifier = Modifier.weight(1f)) {
+                if (subjects.isEmpty()) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(text = "No subjects added yet", color = Color.LightGray, fontSize = 16.sp)
+                        Text(text = "Tap a grade above to start", color = Color.LightGray, fontSize = 12.sp)
+                    }
+                } else {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        contentPadding = PaddingValues(bottom = 16.dp)
+                    ) {
+                        items(subjects, key = { it.id }) { subject ->
+                            SubjectItem(
+                                modifier = Modifier.animateItem(),
+                                subject = subject,
+                                onCreditsChange = { viewModel.updateSubjectCredits(subject.id, it) },
+                                onDelete = { viewModel.removeSubject(subject.id) }
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Calculation and Results
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp)
             ) {
-                calculatedCgpa?.let { cgpa ->
-                    ResultCard(cgpa = cgpa)
+                errorMessage?.let {
+                    Text(
+                        text = it,
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    OutlinedButton(
+                        onClick = { viewModel.reset() },
+                        modifier = Modifier.weight(0.35f).height(54.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        border = ButtonDefaults.outlinedButtonBorder.copy(width = 1.dp)
+                    ) {
+                        Text("Reset")
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    GradientButton(
+                        text = "Calculate",
+                        onClick = { viewModel.calculateCgpa() },
+                        modifier = Modifier.weight(0.65f).height(54.dp)
+                    )
+                }
+
+                AnimatedVisibility(
+                    visible = calculatedCgpa != null,
+                    enter = expandVertically() + fadeIn(),
+                    exit = shrinkVertically() + fadeOut()
+                ) {
+                    calculatedCgpa?.let { ResultCard(cgpa = it) }
                 }
             }
         }
@@ -154,10 +171,95 @@ fun CgpaScreen(
 }
 
 @Composable
+fun GradePickItem(grade: String, onClick: () -> Unit) {
+    Surface(
+        onClick = onClick,
+        shape = CircleShape,
+        color = Color.White,
+        shadowElevation = 2.dp,
+        modifier = Modifier.size(48.dp)
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Text(text = grade, fontWeight = FontWeight.Bold, color = BlueSky, fontSize = 18.sp)
+        }
+    }
+}
+
+@Composable
+fun SubjectItem(
+    modifier: Modifier = Modifier,
+    subject: Subject,
+    onCreditsChange: (Int) -> Unit,
+    onDelete: () -> Unit
+) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Surface(
+                shape = CircleShape,
+                color = BlueSky.copy(alpha = 0.1f),
+                modifier = Modifier.size(40.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(text = subject.grade, fontWeight = FontWeight.Bold, color = BlueSky)
+                }
+            }
+            
+            Spacer(modifier = Modifier.width(16.dp))
+            
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = "Credits", fontSize = 12.sp, color = Color.Gray)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    listOf(1, 2, 3, 4).forEach { credit ->
+                        CreditChip(
+                            value = credit,
+                            isSelected = subject.credits == credit,
+                            onSelect = { onCreditsChange(credit) }
+                        )
+                    }
+                }
+            }
+            
+            IconButton(onClick = onDelete) {
+                Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color(0xFFEF5350))
+            }
+        }
+    }
+}
+
+@Composable
+fun CreditChip(value: Int, isSelected: Boolean, onSelect: () -> Unit) {
+    Surface(
+        onClick = onSelect,
+        shape = RoundedCornerShape(8.dp),
+        color = if (isSelected) BlueSky else Color(0xFFF1F5F9),
+        modifier = Modifier.size(width = 32.dp, height = 28.dp)
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Text(
+                text = "$value",
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+                color = if (isSelected) Color.White else Color.Gray
+            )
+        }
+    }
+}
+
+@Composable
 fun ResultCard(cgpa: Float) {
     val status = when {
-        cgpa >= 9 -> "Excellent"
-        cgpa >= 8 -> "Very Good"
+        cgpa >= 9 -> "Outstanding"
+        cgpa >= 8 -> "Excellent"
         cgpa >= 7 -> "Good"
         else -> "Improve"
     }
@@ -170,33 +272,36 @@ fun ResultCard(cgpa: Float) {
     }
 
     Card(
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-        modifier = Modifier.fillMaxWidth()
+        shape = RoundedCornerShape(24.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White)
-                .padding(24.dp),
+            modifier = Modifier.fillMaxWidth().padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "Your CGPA",
-                fontSize = 16.sp,
-                color = Color.Gray
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = String.format("%.2f", cgpa),
-                fontSize = 48.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = "Estimated CGPA", fontSize = 14.sp, color = Color.Gray)
+            
+            AnimatedContent(
+                targetState = cgpa,
+                transitionSpec = {
+                    fadeIn(animationSpec = tween(400)) + scaleIn(initialScale = 0.8f) togetherWith
+                            fadeOut(animationSpec = tween(200))
+                },
+                label = "cgpa_anim"
+            ) { targetCgpa ->
+                Text(
+                    text = String.format("%.2f", targetCgpa),
+                    fontSize = 42.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = BlueSky
+                )
+            }
+
             Text(
                 text = status,
-                fontSize = 20.sp,
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = statusColor
             )

@@ -8,32 +8,42 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.UUID
+
+data class Subject(
+    val id: String = UUID.randomUUID().toString(),
+    val grade: String,
+    val credits: Int = 4
+)
 
 class CgpaViewModel(private val dataStoreManager: DataStoreManager) : ViewModel() {
 
     val lastCgpa: StateFlow<Float> = dataStoreManager.getCGPA()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0f)
 
-    // Grade counter values
-    private val _gradeS = MutableStateFlow(0)
-    val gradeS: StateFlow<Int> = _gradeS.asStateFlow()
+    private val _subjects = MutableStateFlow<List<Subject>>(emptyList())
+    val subjects: StateFlow<List<Subject>> = _subjects.asStateFlow()
 
-    private val _gradeA = MutableStateFlow(0)
-    val gradeA: StateFlow<Int> = _gradeA.asStateFlow()
+    val gradeS = _subjects.map { list -> list.count { it.grade == "S" } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
-    private val _gradeB = MutableStateFlow(0)
-    val gradeB: StateFlow<Int> = _gradeB.asStateFlow()
+    val gradeA = _subjects.map { list -> list.count { it.grade == "A" } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
-    private val _gradeC = MutableStateFlow(0)
-    val gradeC: StateFlow<Int> = _gradeC.asStateFlow()
+    val gradeB = _subjects.map { list -> list.count { it.grade == "B" } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
-    private val _gradeD = MutableStateFlow(0)
-    val gradeD: StateFlow<Int> = _gradeD.asStateFlow()
+    val gradeC = _subjects.map { list -> list.count { it.grade == "C" } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
-    private val _gradeE = MutableStateFlow(0)
-    val gradeE: StateFlow<Int> = _gradeE.asStateFlow()
+    val gradeD = _subjects.map { list -> list.count { it.grade == "D" } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
+
+    val gradeE = _subjects.map { list -> list.count { it.grade == "E" } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
     private val _calculatedCgpa = MutableStateFlow<Float?>(null)
     val calculatedCgpa: StateFlow<Float?> = _calculatedCgpa.asStateFlow()
@@ -41,49 +51,47 @@ class CgpaViewModel(private val dataStoreManager: DataStoreManager) : ViewModel(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
-    private val _totalSubjects = MutableStateFlow(0)
-    val totalSubjects: StateFlow<Int> = _totalSubjects.asStateFlow()
+    val totalSubjects = _subjects.map { it.size }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
+
+    val totalCredits = _subjects.map { it.sumOf { s -> s.credits } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
 
-    fun updateGradeCount(grade: String, change: Int) {
-        val currentValue = when (grade) {
-            "S" -> _gradeS.value
-            "A" -> _gradeA.value
-            "B" -> _gradeB.value
-            "C" -> _gradeC.value
-            "D" -> _gradeD.value
-            "E" -> _gradeE.value
-            else -> 0
-        }
-
-        val newValue = (currentValue + change).coerceAtLeast(0)
-
-        when (grade) {
-            "S" -> _gradeS.value = newValue
-            "A" -> _gradeA.value = newValue
-            "B" -> _gradeB.value = newValue
-            "C" -> _gradeC.value = newValue
-            "D" -> _gradeD.value = newValue
-            "E" -> _gradeE.value = newValue
-        }
-
-        updateTotalSubjects()
-        _errorMessage.value = null // clear error when modifying values
+    fun addSubject(grade: String) {
+        val newList = _subjects.value.toMutableList()
+        newList.add(Subject(grade = grade, credits = 4))
+        _subjects.value = newList
+        _errorMessage.value = null
     }
 
-    private fun updateTotalSubjects() {
-        _totalSubjects.value = _gradeS.value + _gradeA.value + _gradeB.value +
-                _gradeC.value + _gradeD.value + _gradeE.value
+    fun removeSubject(subjectId: String) {
+        val newList = _subjects.value.toMutableList()
+        newList.removeAll { it.id == subjectId }
+        _subjects.value = newList
+        _errorMessage.value = null
+    }
+
+    fun updateSubjectCredits(subjectId: String, newCredits: Int) {
+        _subjects.value = _subjects.value.map {
+            if (it.id == subjectId) it.copy(credits = newCredits) else it
+        }
     }
 
     fun calculateCgpa() {
-        val totalPoints = (_gradeS.value * 10) + (_gradeA.value * 9) + (_gradeB.value * 8) +
-                (_gradeC.value * 7) + (_gradeD.value * 6) + (_gradeE.value * 5)
+        val gradePoints = mapOf("S" to 10, "A" to 9, "B" to 8, "C" to 7, "D" to 6, "E" to 5)
+        
+        var totalWeightedPoints = 0f
+        var totalCredits = 0f
 
-        val totalSubs = _totalSubjects.value
+        _subjects.value.forEach { subject ->
+            val points = gradePoints[subject.grade] ?: 0
+            totalWeightedPoints += points * subject.credits
+            totalCredits += subject.credits
+        }
 
-        if (totalSubs > 0) {
-            val cgpa = totalPoints.toFloat() / totalSubs
+        if (totalCredits > 0) {
+            val cgpa = totalWeightedPoints / totalCredits
             _calculatedCgpa.value = cgpa
             _errorMessage.value = null
 
@@ -104,13 +112,7 @@ class CgpaViewModel(private val dataStoreManager: DataStoreManager) : ViewModel(
     }
     
     fun reset() {
-        _gradeS.value = 0
-        _gradeA.value = 0
-        _gradeB.value = 0
-        _gradeC.value = 0
-        _gradeD.value = 0
-        _gradeE.value = 0
-        updateTotalSubjects()
+        _subjects.value = emptyList()
         _calculatedCgpa.value = null
         _errorMessage.value = null
     }
