@@ -69,6 +69,7 @@ fun FloatingBottomBar(
                     color = Color.White,
                     shape = RoundedCornerShape(32.dp)
                 )
+                .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             var totalDrag by remember { mutableFloatStateOf(0f) }
             val draggableState = rememberDraggableState { delta ->
@@ -125,8 +126,7 @@ fun FloatingBottomBar(
                         onDragStopped = {
                             onDragStopped()
                         }
-                    )
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                    ),
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
