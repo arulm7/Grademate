@@ -1,10 +1,8 @@
 package com.app.grademate.ui.screens.cgpa
 
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
@@ -32,46 +30,54 @@ fun GradeCounterRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp),
+            .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = grade,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.width(40.dp)
-        )
-        
-        Text(
-            text = "($point)",
-            fontSize = 16.sp,
-            color = Color.Gray,
-            modifier = Modifier.weight(1f)
-        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = "Grade $grade",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.DarkGray
+            )
+            Text(
+                text = "Points: $point",
+                fontSize = 12.sp,
+                color = Color.Gray
+            )
+        }
         
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.background(
+                color = Color(0xFFF1F5F9),
+                shape = RoundedCornerShape(16.dp)
+            ).padding(4.dp)
         ) {
             CounterButton(
                 icon = Icons.Default.Remove,
                 onClick = onDecrement,
-                enabled = count > 0,
-                modifier = Modifier.padding(end = 16.dp)
+                enabled = count > 0
             )
             
-            Text(
-                text = count.toString(),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.width(32.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .width(48.dp)
+                    .padding(horizontal = 4.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = count.toString(),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.DarkGray,
+                    textAlign = TextAlign.Center
+                )
+            }
             
             CounterButton(
                 icon = Icons.Default.Add,
-                onClick = onIncrement,
-                modifier = Modifier.padding(start = 16.dp)
+                onClick = onIncrement
             )
         }
     }

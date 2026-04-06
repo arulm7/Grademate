@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -248,34 +249,33 @@ fun AttendanceScreen(
                         }
 
                         if (predictionIfAttend != null && predictionIfMiss != null && futureClasses > 0) {
-                            Spacer(modifier = Modifier.height(24.dp))
+                            Spacer(modifier = Modifier.height(32.dp))
                             
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(Color(0xFFF8FAFC), RoundedCornerShape(20.dp))
-                                    .padding(20.dp)
+                            Text(
+                                text = "Impact Analysis",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.DarkGray,
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Start
+                            )
+                            
+                            Spacer(modifier = Modifier.height(16.dp))
+                            
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
-                                Text(
-                                    text = "Impact Analysis",
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.DarkGray
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                
-                                PredictionRow(
+                                PredictionChart(
                                     label = "If you attend all",
                                     value = predictionIfAttend!!,
-                                    color = Color(0xFF4CAF50)
+                                    color = Color(0xFF66BB6A) // Soft Green
                                 )
                                 
-                                Spacer(modifier = Modifier.height(12.dp))
-                                
-                                PredictionRow(
+                                PredictionChart(
                                     label = "If you miss all",
                                     value = predictionIfMiss!!,
-                                    color = Color(0xFFEF5350)
+                                    color = Color(0xFFEF5350) // Soft Red
                                 )
                             }
                         }
@@ -296,18 +296,41 @@ fun AttendanceScreen(
 }
 
 @Composable
-fun PredictionRow(label: String, value: Float, color: Color) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+fun PredictionChart(label: String, value: Float, color: Color) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.width(120.dp)
     ) {
-        Text(text = label, fontSize = 14.sp, color = Color.Gray)
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.size(90.dp)) {
+            CircularProgressIndicator(
+                progress = { 1f },
+                modifier = Modifier.fillMaxSize(),
+                color = Color(0xFFF1F5F9),
+                strokeWidth = 8.dp,
+                strokeCap = StrokeCap.Round
+            )
+            CircularProgressIndicator(
+                progress = { value / 100f },
+                modifier = Modifier.fillMaxSize(),
+                color = color,
+                strokeWidth = 8.dp,
+                strokeCap = StrokeCap.Round
+            )
+            Text(
+                text = String.format("%.0f%%", value),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.DarkGray
+            )
+        }
+        Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = String.format("%.1f%%", value),
-            fontSize = 15.sp,
-            color = color,
-            fontWeight = FontWeight.Bold
+            text = label,
+            fontSize = 13.sp,
+            color = Color.Gray,
+            fontWeight = FontWeight.Medium,
+            textAlign = TextAlign.Center,
+            lineHeight = 16.sp
         )
     }
 }

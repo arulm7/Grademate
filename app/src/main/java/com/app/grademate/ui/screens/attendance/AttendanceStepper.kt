@@ -1,9 +1,8 @@
 package com.app.grademate.ui.screens.attendance
 
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
@@ -11,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -29,36 +29,50 @@ fun AttendanceStepper(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp),
+            .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = label,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = Color.DarkGray,
             modifier = Modifier.weight(1f)
         )
         
-        CounterButton(
-            icon = Icons.Default.Remove,
-            onClick = { onValueChange((value - 1).coerceAtLeast(min)) },
-            enabled = value > min,
-            modifier = Modifier.padding(end = 16.dp)
-        )
-        
-        Text(
-            text = value.toString(),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.width(48.dp)
-        )
-        
-        CounterButton(
-            icon = Icons.Default.Add,
-            onClick = { onValueChange((value + 1).coerceAtMost(max)) },
-            enabled = value < max,
-            modifier = Modifier.padding(start = 16.dp)
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.background(
+                color = Color(0xFFF1F5F9),
+                shape = RoundedCornerShape(16.dp)
+            ).padding(4.dp)
+        ) {
+            CounterButton(
+                icon = Icons.Default.Remove,
+                onClick = { onValueChange((value - 1).coerceAtLeast(min)) },
+                enabled = value > min
+            )
+            
+            Box(
+                modifier = Modifier
+                    .width(48.dp)
+                    .padding(horizontal = 4.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = value.toString(),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.DarkGray,
+                    textAlign = TextAlign.Center
+                )
+            }
+            
+            CounterButton(
+                icon = Icons.Default.Add,
+                onClick = { onValueChange((value + 1).coerceAtMost(max)) },
+                enabled = value < max
+            )
+        }
     }
 }
