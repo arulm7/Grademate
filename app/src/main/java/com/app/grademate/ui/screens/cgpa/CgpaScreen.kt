@@ -33,6 +33,13 @@ fun CgpaScreen(
     viewModel: CgpaViewModel
 ) {
     val subjects by viewModel.subjects.collectAsState()
+    val gradeS by viewModel.gradeS.collectAsState()
+    val gradeA by viewModel.gradeA.collectAsState()
+    val gradeB by viewModel.gradeB.collectAsState()
+    val gradeC by viewModel.gradeC.collectAsState()
+    val gradeD by viewModel.gradeD.collectAsState()
+    val gradeE by viewModel.gradeE.collectAsState()
+    
     val totalSubjects by viewModel.totalSubjects.collectAsState()
     val totalCredits by viewModel.totalCredits.collectAsState()
     val calculatedCgpa by viewModel.calculatedCgpa.collectAsState()
@@ -91,8 +98,20 @@ fun CgpaScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
+                val gradeCounts = mapOf(
+                    "S" to gradeS,
+                    "A" to gradeA,
+                    "B" to gradeB,
+                    "C" to gradeC,
+                    "D" to gradeD,
+                    "E" to gradeE
+                )
                 listOf("S", "A", "B", "C", "D", "E").forEach { grade ->
-                    GradePickItem(grade = grade, onClick = { viewModel.addSubject(grade) })
+                    GradePickItem(
+                        grade = grade,
+                        count = gradeCounts[grade] ?: 0,
+                        onClick = { viewModel.addSubject(grade) }
+                    )
                 }
             }
 
@@ -171,16 +190,30 @@ fun CgpaScreen(
 }
 
 @Composable
-fun GradePickItem(grade: String, onClick: () -> Unit) {
-    Surface(
-        onClick = onClick,
-        shape = CircleShape,
-        color = Color.White,
-        shadowElevation = 2.dp,
-        modifier = Modifier.size(48.dp)
+fun GradePickItem(grade: String, count: Int, onClick: () -> Unit) {
+    BadgedBox(
+        badge = {
+            if (count > 0) {
+                Badge(
+                    containerColor = Color(0xFFEF5350),
+                    contentColor = Color.White,
+                    modifier = Modifier.offset(x = (-4).dp, y = 4.dp)
+                ) {
+                    Text(text = count.toString(), fontSize = 10.sp)
+                }
+            }
+        }
     ) {
-        Box(contentAlignment = Alignment.Center) {
-            Text(text = grade, fontWeight = FontWeight.Bold, color = BlueSky, fontSize = 18.sp)
+        Surface(
+            onClick = onClick,
+            shape = CircleShape,
+            color = Color.White,
+            shadowElevation = 2.dp,
+            modifier = Modifier.size(48.dp)
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Text(text = grade, fontWeight = FontWeight.Bold, color = BlueSky, fontSize = 18.sp)
+            }
         }
     }
 }
