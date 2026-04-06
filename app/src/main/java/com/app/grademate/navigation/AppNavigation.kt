@@ -1,31 +1,19 @@
 package com.app.grademate.navigation
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.app.grademate.ui.components.FloatingBottomBar
 import com.app.grademate.datastore.DataStoreManager
+import com.app.grademate.ui.components.FloatingBottomBar
 import com.app.grademate.ui.screens.attendance.AttendanceScreen
 import com.app.grademate.ui.screens.attendance.AttendanceViewModel
 import com.app.grademate.ui.screens.cgpa.CgpaScreen
@@ -39,122 +27,125 @@ import com.app.grademate.ui.screens.profile.ProfileViewModel
 import com.app.grademate.ui.screens.setup.SetupScreen
 import com.app.grademate.ui.screens.setup.SetupViewModel
 import com.app.grademate.ui.screens.splash.SplashScreen
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AppNavigation(
     dataStoreManager: DataStoreManager,
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
 
-    var isScrollingDown by remember { mutableStateOf(false) }
+    NavHost(
+        navController = navController,
+        startDestination = Screen.Splash.route,
+        modifier = modifier
+    ) {
 
-    val nestedScrollConnection = remember {
-        object : NestedScrollConnection {
-            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                if (available.y < -10) {
-                    isScrollingDown = true
-                } else if (available.y > 10) {
-                    isScrollingDown = false
-                }
-                return Offset.Zero
-            }
+        // 🔹 Splash
+        composable(Screen.Splash.route) {
+            SplashScreen(
+                navController = navController,
+                dataStoreManager = dataStoreManager
+            )
         }
-    }
 
-    val bottomBarRoutes = listOf(Screen.Home.route, Screen.History.route, Screen.Profile.route)
-    val isBottomBarVisible = currentRoute in bottomBarRoutes && !isScrollingDown
+        // 🔹 Setup
+        composable(Screen.Setup.route) {
+            val setupViewModel = remember { SetupViewModel(dataStoreManager) }
+            SetupScreen(
+                navController = navController,
+                viewModel = setupViewModel
+            )
+        }
 
-    Scaffold(
-        modifier = modifier.nestedScroll(nestedScrollConnection),
-        bottomBar = {
-            AnimatedVisibility(
-                visible = isBottomBarVisible,
-                enter = slideInVertically(initialOffsetY = { it }),
-                exit = slideOutVertically(targetOffsetY = { it })
-            ) {
-                if (currentRoute in bottomBarRoutes) {
+        // 🔥 MAIN SCREEN (Pager + Bottom Nav)
+        composable(Screen.Home.route) {
+
+            val pagerState = rememberPagerState(
+                initialPage = 0,
+                pageCount = { 3 }
+            )
+
+            val coroutineScope = rememberCoroutineScope()
+
+            val homeViewModel = remember { HomeViewModel(dataStoreManager) }
+            val historyViewModel = remember { HistoryViewModel(dataStoreManager) }
+            val profileViewModel = remember { ProfileViewModel(dataStoreManager) }
+
+            Scaffold(
+                bottomBar = {
                     FloatingBottomBar(
-                        currentRoute = currentRoute ?: Screen.Home.route,
-                        onNavigate = { route ->
-                            navController.navigate(route) {
-                                popUpTo(Screen.Home.route) {
-                                    saveState = true
+                        selectedIndex = pagerState.currentPage,
+                        pagerOffset = pagerState.currentPage + pagerState.currentPageOffsetFraction,
+                        onItemSelected = { page ->
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(page)
+                            }
+                        },
+                        onDrag = { delta ->
+                            pagerState.dispatchRawDelta(delta)
+                        },
+                        onDragStopped = {
+                            coroutineScope.launch {
+                                val offset = pagerState.currentPageOffsetFraction
+                                val targetPage = when {
+                                    offset > 0.2f -> pagerState.currentPage + 1
+                                    offset < -0.2f -> pagerState.currentPage - 1
+                                    else -> pagerState.currentPage
                                 }
-                                launchSingleTop = true
-                                restoreState = true
+                                pagerState.animateScrollToPage(targetPage.coerceIn(0, 2))
                             }
                         }
                     )
                 }
+            ) { innerPadding ->
+
+                HorizontalPager(
+                    state = pagerState,
+                    userScrollEnabled = false,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                ) { page ->
+
+                    when (page) {
+                        0 -> HomeScreen(
+                            navController = navController,
+                            viewModel = homeViewModel
+                        )
+
+                        1 -> HistoryScreen(
+                            navController = navController,
+                            viewModel = historyViewModel
+                        )
+
+                        2 -> ProfileScreen(
+                            navController = navController,
+                            viewModel = profileViewModel
+                        )
+                    }
+                }
             }
         }
-    ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = Screen.Splash.route,
-            modifier = Modifier.padding(innerPadding),
-            enterTransition = { fadeIn(animationSpec = tween(300)) },
-            exitTransition = { fadeOut(animationSpec = tween(300)) },
-            popEnterTransition = { fadeIn(animationSpec = tween(300)) },
-            popExitTransition = { fadeOut(animationSpec = tween(300)) }
-        ) {
-            composable(Screen.Splash.route) {
-                SplashScreen(
-                    navController = navController,
-                    dataStoreManager = dataStoreManager
-                )
-            }
 
-            composable(Screen.Setup.route) {
-                val setupViewModel = SetupViewModel(dataStoreManager)
-                SetupScreen(
-                    navController = navController,
-                    viewModel = setupViewModel
-                )
-            }
+        // 🔹 CGPA Screen
+        composable(Screen.Cgpa.route) {
+            val cgpaViewModel = remember { CgpaViewModel(dataStoreManager) }
+            CgpaScreen(
+                navController = navController,
+                viewModel = cgpaViewModel
+            )
+        }
 
-            composable(Screen.Home.route) {
-                val homeViewModel = HomeViewModel(dataStoreManager)
-                HomeScreen(
-                    navController = navController,
-                    viewModel = homeViewModel
-                )
-            }
-
-            composable(Screen.History.route) {
-                val historyViewModel = HistoryViewModel(dataStoreManager)
-                HistoryScreen(
-                    navController = navController,
-                    viewModel = historyViewModel
-                )
-            }
-
-            composable(Screen.Cgpa.route) {
-                val cgpaViewModel = CgpaViewModel(dataStoreManager)
-                CgpaScreen(
-                    navController = navController,
-                    viewModel = cgpaViewModel
-                )
-            }
-
-            composable(Screen.Attendance.route) {
-                val attendanceViewModel = AttendanceViewModel(dataStoreManager)
-                AttendanceScreen(
-                    navController = navController,
-                    viewModel = attendanceViewModel
-                )
-            }
-
-            composable(Screen.Profile.route) {
-                val profileViewModel = ProfileViewModel(dataStoreManager)
-                ProfileScreen(
-                    navController = navController,
-                    viewModel = profileViewModel
-                )
-            }
+        // 🔹 Attendance Screen
+        composable(Screen.Attendance.route) {
+            val attendanceViewModel = remember { AttendanceViewModel(dataStoreManager) }
+            AttendanceScreen(
+                navController = navController,
+                viewModel = attendanceViewModel
+            )
         }
     }
 }

@@ -5,26 +5,27 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.boundsInParent
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.util.lerp
+import kotlin.math.roundToInt
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
@@ -33,44 +34,108 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.app.grademate.navigation.Screen
 import com.app.grademate.ui.theme.BlueLight
 import com.app.grademate.ui.theme.BlueSky
 
 @Composable
 fun FloatingBottomBar(
-    currentRoute: String,
-    onNavigate: (String) -> Unit,
-    modifier: Modifier = Modifier
+    selectedIndex: Int,
+    pagerOffset: Float = selectedIndex.toFloat(),
+    onItemSelected: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    onDrag: (Float) -> Unit = {},
+    onDragStopped: () -> Unit = {}
 ) {
     val items = listOf(
-        Triple(Screen.Home.route, "Home", Icons.Default.Home),
-        Triple(Screen.History.route, "History", Icons.Default.History),
-        Triple(Screen.Profile.route, "Profile", Icons.Default.Person)
+        Triple("Home", Icons.Default.Home, 0),
+        Triple("History", Icons.Default.History, 1),
+        Triple("Profile", Icons.Default.Person, 2)
     )
 
-    Row(
+    Box(
         modifier = modifier
-            .padding(horizontal = 24.dp, vertical = 24.dp)
-            .shadow(elevation = 16.dp, shape = RoundedCornerShape(32.dp), spotColor = Color.LightGray)
-            .background(Color.White, shape = RoundedCornerShape(32.dp))
-            .padding(horizontal = 16.dp, vertical = 12.dp)
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+            .fillMaxWidth()
+            .padding(bottom = 16.dp),
+        contentAlignment = Alignment.Center
     ) {
-        items.forEach { (route, label, icon) ->
-            val isSelected = currentRoute == route
-            BottomNavItem(
-                icon = icon,
-                label = label,
-                isSelected = isSelected,
-                onClick = {
-                    if (!isSelected) {
-                        onNavigate(route)
-                    }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .shadow(
+                    elevation = 20.dp,
+                    shape = RoundedCornerShape(32.dp)
+                )
+                .background(
+                    color = Color.White,
+                    shape = RoundedCornerShape(32.dp)
+                )
+        ) {
+            var totalDrag by remember { mutableFloatStateOf(0f) }
+            val draggableState = rememberDraggableState { delta ->
+                onDrag(delta)
+            }
+
+            var itemBounds by remember { mutableStateOf(List(3) { Rect.Zero }) }
+
+            if (itemBounds.none { it == Rect.Zero }) {
+                val floatIndex = pagerOffset.coerceIn(0f, 2f)
+                val lowerIndex = floatIndex.toInt()
+                val upperIndex = minOf(lowerIndex + 1, 2)
+                val fraction = floatIndex - lowerIndex
+
+                val startLeft = itemBounds[lowerIndex].left
+                val startRight = itemBounds[lowerIndex].right
+                val endLeft = itemBounds[upperIndex].left
+                val endRight = itemBounds[upperIndex].right
+
+                val left = lerp(startLeft, endLeft, fraction)
+                val right = lerp(startRight, endRight, fraction)
+                val width = right - left
+
+                Box(
+                    modifier = Modifier
+                        .offset { IntOffset(left.roundToInt(), itemBounds[0].top.roundToInt()) }
+                        .size(
+                            width = with(LocalDensity.current) { width.toDp() },
+                            height = with(LocalDensity.current) { itemBounds[0].height.toDp() }
+                        )
+                        .background(
+                            brush = Brush.horizontalGradient(listOf(BlueLight, BlueSky)),
+                            shape = RoundedCornerShape(50)
+                        )
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .draggable(
+                        state = draggableState,
+                        orientation = Orientation.Horizontal,
+                        onDragStopped = {
+                            onDragStopped()
+                        }
+                    )
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                items.forEach { (label, icon, index) ->
+                    BottomNavItem(
+                        icon = icon,
+                        label = label,
+                        isSelected = selectedIndex == index,
+                        onClick = { onItemSelected(index) },
+                        onPositioned = { rect ->
+                            if (itemBounds[index] != rect) {
+                                val newBounds = itemBounds.toMutableList()
+                                newBounds[index] = rect
+                                itemBounds = newBounds
+                            }
+                        }
+                    )
                 }
-            )
+            }
         }
     }
 }
@@ -80,47 +145,33 @@ fun BottomNavItem(
     icon: ImageVector,
     label: String,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onPositioned: (Rect) -> Unit = {}
 ) {
-    val scale by animateFloatAsState(targetValue = if (isSelected) 1.05f else 1f, label = "icon_scale")
-    
+    val scale by animateFloatAsState(
+        targetValue = if (isSelected) 1.2f else 1f,
+        label = "scale"
+    )
+
     val interactionSource = remember { MutableInteractionSource() }
 
     Box(
         modifier = Modifier
-            .clip(CircleShape)
-            .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
-            .background(
-                brush = if (isSelected) {
-                    Brush.linearGradient(listOf(BlueLight, BlueSky))
-                } else {
-                    Brush.linearGradient(listOf(Color.Transparent, Color.Transparent))
-                },
-                shape = CircleShape
+            .onGloballyPositioned { onPositioned(it.boundsInParent()) }
+            .scale(scale)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick
             )
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 24.dp, vertical = 10.dp),
         contentAlignment = Alignment.Center
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = label,
-                tint = if (isSelected) Color.White else Color.Gray,
-                modifier = Modifier.size(24.dp).scale(scale)
-            )
-            
-            AnimatedVisibility(visible = isSelected) {
-                Text(
-                    text = label,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(start = 8.dp)
-                )
-            }
-        }
+        Icon(
+            imageVector = icon,
+            contentDescription = label,
+            tint = if (isSelected) Color.White else Color.Gray,
+            modifier = Modifier.size(24.dp)
+        )
     }
 }

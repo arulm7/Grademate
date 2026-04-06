@@ -38,23 +38,19 @@ fun ProfileScreen(
     val departments = listOf("CSE", "IT", "ECE", "EEE", "MECH", "CIVIL")
     var expanded by remember { mutableStateOf(false) }
 
-    Scaffold(
-        topBar = {
-            AppTopBarWrapper(
-                title = "Profile",
-                onBackClick = { navController.popBackStack() },
-            )
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .background(Color(0xFFF8FAFC))
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(modifier = Modifier.height(24.dp))
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF8FAFC))
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        AppTopBarWrapper(
+            title = "Profile",
+            onBackClick = { navController.popBackStack() },
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
 
             Card(
                 shape = RoundedCornerShape(20.dp),
@@ -68,7 +64,7 @@ fun ProfileScreen(
                         .padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    
+
                     Box(
                         modifier = Modifier
                             .size(100.dp)
@@ -79,7 +75,8 @@ fun ProfileScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = if (userName.isNotBlank()) userName.first().toString().uppercase() else "?",
+                            text = if (userName.isNotBlank()) userName.first().toString()
+                                .uppercase() else "?",
                             fontSize = 40.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
@@ -112,6 +109,7 @@ fun ProfileScreen(
                                 modifier = Modifier
                                     .menuAnchor()
                                     .fillMaxWidth(),
+
                                 shape = RoundedCornerShape(12.dp)
                             )
 
@@ -148,7 +146,7 @@ fun ProfileScreen(
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
@@ -156,7 +154,7 @@ fun ProfileScreen(
                             fontSize = 16.sp,
                             color = Color.Gray
                         )
-                        
+
                         Spacer(modifier = Modifier.height(32.dp))
 
                         GradientButton(
@@ -169,4 +167,4 @@ fun ProfileScreen(
             }
         }
     }
-}
+

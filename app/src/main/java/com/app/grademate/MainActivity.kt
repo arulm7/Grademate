@@ -21,12 +21,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             GradeMateTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    AppNavigation(
-                        dataStoreManager = dataStoreManager,
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                AppNavigation(
+                    dataStoreManager = dataStoreManager,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
         }
     }

@@ -78,19 +78,19 @@ fun AttendanceScreen(
         else -> "Safe"
     }
 
-    Scaffold(
-        topBar = {
-            AppTopBarWrapper(
-                title = "Attendance Tracker",
-                onBackClick = { navController.popBackStack() }
-            )
-        }
-    ) { innerPadding ->
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF8FAFC))
+    ) {
+        AppTopBarWrapper(
+            title = "Attendance Tracker",
+            onBackClick = { navController.popBackStack() }
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .background(Color(0xFFF8FAFC))
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally

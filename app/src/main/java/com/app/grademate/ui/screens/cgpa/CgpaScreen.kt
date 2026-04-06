@@ -61,20 +61,20 @@ fun CgpaScreen(
     val errorMessage by viewModel.errorMessage.collectAsState()
     val lastCgpa by viewModel.lastCgpa.collectAsState()
 
-    Scaffold(
-        topBar = {
-            AppTopBarWrapper(
-                title = "CGPA Calculator",
-                onBackClick = { navController.popBackStack() }
-            )
-        }
-    ) { innerPadding ->
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF8FAFC))
+    ) {
+        AppTopBarWrapper(
+            title = "CGPA Calculator",
+            onBackClick = { navController.popBackStack() }
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .background(Color(0xFFF8FAFC))
-                .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp)
+                .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
             

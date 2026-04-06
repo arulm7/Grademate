@@ -49,18 +49,14 @@ fun SetupScreen(
     val departments = listOf("CSE", "IT", "ECE", "EEE", "MECH", "CIVIL")
     var expanded by remember { mutableStateOf(false) }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize()
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .background(Color(0xFFF8FAFC))
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(modifier = Modifier.height(48.dp))
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF8FAFC))
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.height(48.dp))
             Text(
                 text = "Welcome to GradeMate",
                 fontSize = 28.sp,
@@ -133,4 +129,4 @@ fun SetupScreen(
             )
         }
     }
-}
+

@@ -23,9 +23,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -50,20 +47,17 @@ fun HistoryScreen(
 ) {
     val historyItems by viewModel.historyItems.collectAsState()
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            AppTopBarWrapper(title = "History")
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .background(Color(0xFFF8FAFC))
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-        ) {
-            Crossfade(targetState = historyItems.isEmpty(), label = "history_crossfade") { isEmpty ->
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF8FAFC))
+            .padding(16.dp)
+    ) {
+        AppTopBarWrapper(title = "History")
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Crossfade(targetState = historyItems.isEmpty(), label = "history_crossfade") { isEmpty ->
                 if (isEmpty) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(
@@ -83,7 +77,7 @@ fun HistoryScreen(
             }
         }
     }
-}
+
 
 @Composable
 fun HistoryCard(item: HistoryItem) {
