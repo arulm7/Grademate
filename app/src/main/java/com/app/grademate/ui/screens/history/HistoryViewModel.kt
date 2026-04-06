@@ -7,10 +7,16 @@ import com.app.grademate.datastore.HistoryItem
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class HistoryViewModel(private val dataStoreManager: DataStoreManager) : ViewModel() {
 
     val historyItems: StateFlow<List<HistoryItem>> = dataStoreManager.getHistory()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    fun deleteHistoryItem(item: HistoryItem) {
+        viewModelScope.launch {
+            dataStoreManager.deleteHistoryItem(item)
+        }
+    }
 }

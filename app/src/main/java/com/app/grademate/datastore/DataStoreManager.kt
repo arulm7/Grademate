@@ -84,6 +84,16 @@ class DataStoreManager(private val context: Context) {
         }
     }
 
+    suspend fun deleteHistoryItem(item: HistoryItem) {
+        context.dataStore.edit { preferences ->
+            val jsonHistory = preferences[HISTORY] ?: "[]"
+            val type = object : TypeToken<List<HistoryItem>>() {}.type
+            val historyList: MutableList<HistoryItem> = gson.fromJson(jsonHistory, type)
+            historyList.removeAll { it.timestamp == item.timestamp }
+            preferences[HISTORY] = gson.toJson(historyList)
+        }
+    }
+
     fun getHistory(): Flow<List<HistoryItem>> = context.dataStore.data.map { preferences ->
         val jsonHistory = preferences[HISTORY] ?: "[]"
         val type = object : TypeToken<List<HistoryItem>>() {}.type
