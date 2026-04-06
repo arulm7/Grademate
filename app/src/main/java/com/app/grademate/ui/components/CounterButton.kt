@@ -41,6 +41,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+import com.app.grademate.ui.theme.BlueLight
+import com.app.grademate.ui.theme.BlueSky
+import androidx.compose.ui.graphics.Brush
+
 @Composable
 fun CounterButton(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
@@ -51,6 +55,12 @@ fun CounterButton(
     var isPressed by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(targetValue = if (isPressed) 0.85f else 1f, label = "btn_scale")
 
+    val backgroundBrush = if (enabled) {
+        Brush.linearGradient(listOf(BlueLight, BlueSky))
+    } else {
+        Brush.linearGradient(listOf(Color.LightGray, Color.Gray))
+    }
+
     IconButton(
         onClick = onClick,
         enabled = enabled,
@@ -58,8 +68,8 @@ fun CounterButton(
             .size(40.dp)
             .scale(scale)
             .background(
-                color = if (enabled) MaterialTheme.colorScheme.primaryContainer else Color.LightGray,
-                shape = CircleShape
+                brush = backgroundBrush,
+                shape = RoundedCornerShape(12.dp)
             )
             .pointerInput(enabled) {
                 if (enabled) {
@@ -74,12 +84,14 @@ fun CounterButton(
                 }
             },
         colors = IconButtonDefaults.iconButtonColors(
-            contentColor = if (enabled) MaterialTheme.colorScheme.onPrimaryContainer else Color.Gray
+            contentColor = Color.White,
+            disabledContentColor = Color.White.copy(alpha = 0.6f)
         )
     ) {
         Icon(
             imageVector = icon,
-            contentDescription = null
+            contentDescription = null,
+            modifier = Modifier.size(20.dp)
         )
     }
 }
