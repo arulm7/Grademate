@@ -104,7 +104,7 @@ fun AppNavigation(
                                 // Pager width is much larger than the bottom bar
                                 val multiplier = 3f 
                                 pagerState.scroll {
-                                    scrollBy(-delta * multiplier)
+                                    scrollBy(delta * multiplier)
                                 }
                             }
                         },
