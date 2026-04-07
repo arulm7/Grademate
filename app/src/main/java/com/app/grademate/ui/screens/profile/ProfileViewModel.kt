@@ -16,6 +16,15 @@ class ProfileViewModel(private val dataStoreManager: DataStoreManager) : ViewMod
     val department: StateFlow<String> = dataStoreManager.getDepartment()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
 
+    val isDarkMode: StateFlow<Boolean> = dataStoreManager.isDarkMode(false)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
+    fun toggleDarkMode(enabled: Boolean) {
+        viewModelScope.launch {
+            dataStoreManager.saveDarkMode(enabled)
+        }
+    }
+
     fun updateProfile(name: String, dept: String) {
         viewModelScope.launch {
             dataStoreManager.saveUser(name, dept)

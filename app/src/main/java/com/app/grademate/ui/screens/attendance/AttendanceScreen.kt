@@ -5,6 +5,7 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -59,7 +60,7 @@ fun AttendanceScreen(
                 onBackClick = { navController.popBackStack() }
             )
         },
-        containerColor = Color(0xFFF8FAFC)
+        containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -74,7 +75,7 @@ fun AttendanceScreen(
             // Stats Card
             Card(
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                 modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
             ) {
@@ -85,7 +86,7 @@ fun AttendanceScreen(
                         text = "Class Statistics",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.DarkGray,
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
                     
@@ -124,7 +125,7 @@ fun AttendanceScreen(
             // Predictor Card
             Card(
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                 modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)
             ) {
@@ -135,7 +136,7 @@ fun AttendanceScreen(
                         text = "Future Predictor",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.DarkGray,
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
                     AttendanceStepper(
@@ -147,7 +148,7 @@ fun AttendanceScreen(
                     Text(
                         text = "Simulate your future attendance based on $futureClasses upcoming classes.",
                         fontSize = 12.sp,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
                 }
             }
@@ -161,7 +162,7 @@ fun AttendanceScreen(
                 Card(
                     shape = RoundedCornerShape(28.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp)
                 ) {
                     Column(
@@ -180,7 +181,7 @@ fun AttendanceScreen(
                             CircularProgressIndicator(
                                 progress = { 1f },
                                 modifier = Modifier.fillMaxSize(),
-                                color = Color(0xFFF1F5F9),
+                                color = MaterialTheme.colorScheme.surfaceVariant,
                                 strokeWidth = 16.dp,
                                 strokeCap = StrokeCap.Round
                             )
@@ -206,7 +207,7 @@ fun AttendanceScreen(
                                         text = String.format("%.0f%%", targetPercent),
                                         fontSize = 48.sp,
                                         fontWeight = FontWeight.ExtraBold,
-                                        color = Color.DarkGray
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                                 Text(
@@ -235,14 +236,14 @@ fun AttendanceScreen(
                             }
                         } else {
                             Surface(
-                                color = Color(0xFFE8F5E9),
+                                color = Color(0xFFE8F5E9).copy(alpha = if(isSystemInDarkTheme()) 0.2f else 1f),
                                 shape = RoundedCornerShape(16.dp)
                             ) {
                                 Text(
                                     text = "Great job! Your attendance is solid.",
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = Color(0xFF2E7D32),
+                                    color = if(isSystemInDarkTheme()) Color(0xFF81C784) else Color(0xFF2E7D32),
                                     modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
                                 )
                             }
@@ -255,7 +256,7 @@ fun AttendanceScreen(
                                 text = "Impact Analysis",
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.DarkGray,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.fillMaxWidth(),
                                 textAlign = TextAlign.Start
                             )
@@ -305,7 +306,7 @@ fun PredictionChart(label: String, value: Float, color: Color) {
             CircularProgressIndicator(
                 progress = { 1f },
                 modifier = Modifier.fillMaxSize(),
-                color = Color(0xFFF1F5F9),
+                color = MaterialTheme.colorScheme.surfaceVariant,
                 strokeWidth = 8.dp,
                 strokeCap = StrokeCap.Round
             )
@@ -320,14 +321,14 @@ fun PredictionChart(label: String, value: Float, color: Color) {
                 text = String.format("%.0f%%", value),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.DarkGray
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
         Spacer(modifier = Modifier.height(12.dp))
         Text(
             text = label,
             fontSize = 13.sp,
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
             fontWeight = FontWeight.Medium,
             textAlign = TextAlign.Center,
             lineHeight = 16.sp

@@ -30,6 +30,7 @@ fun ProfileScreen(
 ) {
     val userName by viewModel.userName.collectAsState()
     val userDepartment by viewModel.department.collectAsState()
+    val isDarkMode by viewModel.isDarkMode.collectAsState()
 
     var isEditing by remember { mutableStateOf(false) }
     var editName by remember(userName) { mutableStateOf(userName) }
@@ -41,7 +42,7 @@ fun ProfileScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF8FAFC))
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -50,12 +51,12 @@ fun ProfileScreen(
             Card(
                 shape = RoundedCornerShape(20.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.White)
                         .padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -100,7 +101,6 @@ fun ProfileScreen(
                                 readOnly = true,
                                 label = { Text("Department") },
                                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
                                 modifier = Modifier
                                     .menuAnchor()
                                     .fillMaxWidth(),
@@ -149,6 +149,33 @@ fun ProfileScreen(
                             fontSize = 16.sp,
                             color = Color.Gray
                         )
+
+                        Spacer(modifier = Modifier.height(24.dp))
+                        
+                        Divider(color = Color.LightGray.copy(alpha = 0.2f))
+                        
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Dark Mode",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Switch(
+                                checked = isDarkMode,
+                                onCheckedChange = { viewModel.toggleDarkMode(it) },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = BlueSky,
+                                    checkedTrackColor = BlueSky.copy(alpha = 0.5f)
+                                )
+                            )
+                        }
 
                         Spacer(modifier = Modifier.height(32.dp))
 

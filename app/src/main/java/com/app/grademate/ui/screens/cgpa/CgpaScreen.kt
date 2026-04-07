@@ -53,7 +53,7 @@ fun CgpaScreen(
                 onBackClick = { navController.popBackStack() }
             )
         },
-        containerColor = Color(0xFFF8FAFC)
+        containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -70,11 +70,11 @@ fun CgpaScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text(text = "Summary", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.DarkGray)
+                    Text(text = "Summary", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
                     Text(
                         text = "Last: ${String.format("%.2f", lastCgpa)}",
                         fontSize = 12.sp,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                     )
                 }
                 
@@ -92,7 +92,7 @@ fun CgpaScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             // Quick Add Grades
-            Text(text = "Add Subjects", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.Gray)
+            Text(text = "Add Subjects", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f))
             Spacer(modifier = Modifier.height(10.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -207,7 +207,7 @@ fun GradePickItem(grade: String, count: Int, onClick: () -> Unit) {
         Surface(
             onClick = onClick,
             shape = CircleShape,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.surface,
             shadowElevation = 2.dp,
             modifier = Modifier.size(48.dp)
         ) {
@@ -228,7 +228,7 @@ fun SubjectItem(
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(
@@ -250,7 +250,7 @@ fun SubjectItem(
             Spacer(modifier = Modifier.width(16.dp))
             
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = "Credits", fontSize = 12.sp, color = Color.Gray)
+                Text(text = "Credits", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     listOf(1, 2, 3, 4).forEach { credit ->
                         CreditChip(
@@ -274,7 +274,7 @@ fun CreditChip(value: Int, isSelected: Boolean, onSelect: () -> Unit) {
     Surface(
         onClick = onSelect,
         shape = RoundedCornerShape(8.dp),
-        color = if (isSelected) BlueSky else Color(0xFFF1F5F9),
+        color = if (isSelected) BlueSky else MaterialTheme.colorScheme.surfaceVariant,
         modifier = Modifier.size(width = 32.dp, height = 28.dp)
     ) {
         Box(contentAlignment = Alignment.Center) {
@@ -282,7 +282,7 @@ fun CreditChip(value: Int, isSelected: Boolean, onSelect: () -> Unit) {
                 text = "$value",
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
-                color = if (isSelected) Color.White else Color.Gray
+                color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -307,14 +307,14 @@ fun ResultCard(cgpa: Float) {
     Card(
         shape = RoundedCornerShape(24.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth().padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Estimated CGPA", fontSize = 14.sp, color = Color.Gray)
+            Text(text = "Estimated CGPA", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
             
             AnimatedContent(
                 targetState = cgpa,

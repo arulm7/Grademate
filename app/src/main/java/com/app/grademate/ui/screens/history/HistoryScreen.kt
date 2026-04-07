@@ -33,7 +33,7 @@ fun HistoryScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF8FAFC))
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
     ) {
 
@@ -48,7 +48,7 @@ fun HistoryScreen(
                 ) {
                     Text(
                         text = "No history available.",
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                         fontSize = 16.sp
                     )
                 }
@@ -151,13 +151,13 @@ fun HistoryCard(item: HistoryItem) {
     Card(
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(2.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White)
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -180,7 +180,7 @@ fun HistoryCard(item: HistoryItem) {
                 Text(
                     text = date,
                     fontSize = 14.sp,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
             }
 

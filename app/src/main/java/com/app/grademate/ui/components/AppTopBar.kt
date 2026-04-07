@@ -82,12 +82,12 @@ fun AppTopBar(
             .fillMaxWidth()
             .shadow(
                 elevation = 6.dp,
-                spotColor = Color.LightGray,
-                ambientColor = Color.LightGray
+                spotColor = Color.Black.copy(alpha = 0.1f),
+                ambientColor = Color.Black.copy(alpha = 0.1f)
             ),
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = Color.White,
-            scrolledContainerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface,
+            scrolledContainerColor = MaterialTheme.colorScheme.surface
         ),
         windowInsets = TopAppBarDefaults.windowInsets
     )

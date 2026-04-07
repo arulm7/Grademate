@@ -25,7 +25,7 @@ fun BottomNavBar(
     onNavigate: (String) -> Unit
 ) {
     NavigationBar(
-        containerColor = Color.White,
+        containerColor = MaterialTheme.colorScheme.surface,
         modifier = Modifier.shadow(8.dp)
     ) {
         val items = listOf(

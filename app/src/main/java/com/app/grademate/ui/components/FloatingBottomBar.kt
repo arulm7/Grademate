@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -66,7 +67,7 @@ fun FloatingBottomBar(
                     shape = RoundedCornerShape(32.dp)
                 )
                 .background(
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.surface,
                     shape = RoundedCornerShape(32.dp)
                 )
                 .padding(horizontal = 16.dp, vertical = 12.dp)
@@ -111,7 +112,12 @@ fun FloatingBottomBar(
                             height = with(density) { pillHeight.toDp() }
                         )
                         .background(
-                            brush = Brush.horizontalGradient(listOf(BlueLight, BlueSky)),
+                            brush = Brush.horizontalGradient(
+                                listOf(
+                                    BlueLight.copy(alpha = 0.2f),
+                                    BlueSky.copy(alpha = 0.2f)
+                                )
+                            ),
                             shape = RoundedCornerShape(24.dp)
                         )
                 )
@@ -180,7 +186,7 @@ fun BottomNavItem(
         Icon(
             imageVector = icon,
             contentDescription = label,
-            tint = if (isSelected) Color.White else Color.Gray,
+            tint = if (isSelected) BlueSky else Color.Gray,
             modifier = Modifier.size(24.dp)
         )
     }
