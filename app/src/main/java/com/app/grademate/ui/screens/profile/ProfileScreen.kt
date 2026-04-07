@@ -154,28 +154,28 @@ fun ProfileScreen(
                         
                         Divider(color = Color.LightGray.copy(alpha = 0.2f))
                         
-                        Spacer(modifier = Modifier.height(24.dp))
+//                        Spacer(modifier = Modifier.height(24.dp))
 
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "Dark Mode",
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Switch(
-                                checked = isDarkMode,
-                                onCheckedChange = { viewModel.toggleDarkMode(it) },
-                                colors = SwitchDefaults.colors(
-                                    checkedThumbColor = BlueSky,
-                                    checkedTrackColor = BlueSky.copy(alpha = 0.5f)
-                                )
-                            )
-                        }
+//                        Row(
+//                            modifier = Modifier.fillMaxWidth(),
+//                            horizontalArrangement = Arrangement.SpaceBetween,
+//                            verticalAlignment = Alignment.CenterVertically
+//                        ) {
+//                            Text(
+//                                text = "Dark Mode",
+//                                fontSize = 18.sp,
+//                                fontWeight = FontWeight.SemiBold,
+//                                color = MaterialTheme.colorScheme.onSurface
+//                            )
+//                            Switch(
+//                                checked = isDarkMode,
+//                                onCheckedChange = { viewModel.toggleDarkMode(it) },
+//                                colors = SwitchDefaults.colors(
+//                                    checkedThumbColor = BlueSky,
+//                                    checkedTrackColor = BlueSky.copy(alpha = 0.5f)
+//                                )
+//                            )
+//                        }
 
                         Spacer(modifier = Modifier.height(32.dp))
 

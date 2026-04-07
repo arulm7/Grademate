@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,7 +37,9 @@ import com.app.grademate.ui.theme.BlueSky
 fun AppTopBar(
     title: String,
     onBackClick: (() -> Unit)? = null,
-    showProfileAvatar: Boolean = false
+    showProfileAvatar: Boolean = false,
+    isDarkMode: Boolean = false,
+    onDarkModeToggle: ((Boolean) -> Unit)? = null
 ) {
     CenterAlignedTopAppBar(
         title = {
@@ -58,6 +62,15 @@ fun AppTopBar(
             }
         },
         actions = {
+            if (onDarkModeToggle != null) {
+                IconButton(onClick = { onDarkModeToggle(!isDarkMode) }) {
+                    Icon(
+                        imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
+                        contentDescription = "Toggle Dark Mode",
+                        tint = if (isDarkMode) Color.Yellow else Color.Gray
+                    )
+                }
+            }
             if (showProfileAvatar) {
                 Box(
                     modifier = Modifier
@@ -97,11 +110,15 @@ fun AppTopBar(
 fun AppTopBarWrapper(
     title: String,
     onBackClick: (() -> Unit)? = null,
-    showProfileAvatar: Boolean = false
+    showProfileAvatar: Boolean = false,
+    isDarkMode: Boolean = false,
+    onDarkModeToggle: ((Boolean) -> Unit)? = null
 ) {
     AppTopBar(
         title = title,
         onBackClick = onBackClick,
-        showProfileAvatar = showProfileAvatar
+        showProfileAvatar = showProfileAvatar,
+        isDarkMode = isDarkMode,
+        onDarkModeToggle = onDarkModeToggle
     )
 }
