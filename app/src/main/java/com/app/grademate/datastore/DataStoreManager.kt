@@ -32,6 +32,17 @@ class DataStoreManager(private val context: Context) {
         val LAST_CGPA = floatPreferencesKey("last_cgpa")
         val ATTENDANCE = floatPreferencesKey("attendance")
         val HISTORY = stringPreferencesKey("history")
+        val IS_DARK_MODE = booleanPreferencesKey("is_dark_mode")
+    }
+
+    suspend fun saveDarkMode(isDarkMode: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[IS_DARK_MODE] = isDarkMode
+        }
+    }
+
+    fun isDarkMode(systemDefault: Boolean): Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[IS_DARK_MODE] ?: systemDefault
     }
 
     suspend fun saveUser(name: String, department: String) {

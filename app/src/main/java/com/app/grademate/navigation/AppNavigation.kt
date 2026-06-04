@@ -78,6 +78,8 @@ fun AppNavigation(
             val historyViewModel = remember { HistoryViewModel(dataStoreManager) }
             val profileViewModel = remember { ProfileViewModel(dataStoreManager) }
 
+            val isDarkMode by profileViewModel.isDarkMode.collectAsState()
+
             val currentTitle = when (pagerState.targetPage) {
                 0 -> "GradeMate"
                 1 -> "History"
@@ -87,7 +89,11 @@ fun AppNavigation(
 
             Scaffold(
                 topBar = {
-                    AppTopBarWrapper(title = currentTitle)
+                    AppTopBarWrapper(
+                        title = currentTitle,
+                        isDarkMode = isDarkMode,
+                        onDarkModeToggle = { profileViewModel.toggleDarkMode(it) }
+                    )
                 },
                 bottomBar = {
                     FloatingBottomBar(

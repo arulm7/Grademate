@@ -43,7 +43,7 @@ fun HomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF8FAFC))
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
     ) {
         Spacer(modifier = Modifier.height(16.dp))
@@ -63,7 +63,7 @@ fun HomeScreen(
             Text(
                 text = "What would you like to track today?",
                 fontSize = 16.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
             )
         }
 
