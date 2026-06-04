@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.testTag
 import com.app.grademate.ui.components.CounterButton
 
 @Composable
@@ -50,7 +51,8 @@ fun AttendanceStepper(
             CounterButton(
                 icon = Icons.Default.Remove,
                 onClick = { onValueChange((value - 1).coerceAtLeast(min)) },
-                enabled = value > min
+                enabled = value > min,
+                modifier = Modifier.testTag("${label}_remove")
             )
             
             Box(
@@ -64,14 +66,16 @@ fun AttendanceStepper(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.DarkGray,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.testTag("${label}_value")
                 )
             }
             
             CounterButton(
                 icon = Icons.Default.Add,
                 onClick = { onValueChange((value + 1).coerceAtMost(max)) },
-                enabled = value < max
+                enabled = value < max,
+                modifier = Modifier.testTag("${label}_add")
             )
         }
     }
