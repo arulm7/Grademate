@@ -1,7 +1,9 @@
 package com.app.grademate.ui.screens.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,7 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.app.grademate.navigation.Screen
 import com.app.grademate.ui.components.AppTopBarWrapper
-import com.app.grademate.ui.components.FeatureCard
+import com.app.grademate.ui.components.CircularFeatureCard
 
 @Composable
 fun HomeScreen(
@@ -69,18 +71,26 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            FeatureCard(
-                title = "CGPA Calculator",
-                icon = Icons.Default.Calculate,
-                onClick = { navController.navigate(Screen.Cgpa.route) }
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                CircularFeatureCard(
+                    title = "CGPA\nCalculator",
+                    icon = Icons.Default.Calculate,
+                    gradientColors = listOf(Color(0xFF4FACFE), Color(0xFF00C6FF)),
+                    onClick = { navController.navigate(Screen.Cgpa.route) },
+                    bobbingDelayMillis = 0
+                )
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            FeatureCard(
-                title = "Attendance Tracker",
-                icon = Icons.Default.Timer,
-                onClick = { navController.navigate(Screen.Attendance.route) }
-            )
+                CircularFeatureCard(
+                    title = "Attendance\nTracker",
+                    icon = Icons.Default.Timer,
+                    gradientColors = listOf(Color(0xFFAB22FF), Color(0xFF6B11FF)),
+                    onClick = { navController.navigate(Screen.Attendance.route) },
+                    bobbingDelayMillis = 300 // Offset the float phase for premium feel
+                )
+            }
     }
 }
