@@ -252,7 +252,7 @@ fun SubjectItem(
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = "Credits", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf(1, 2, 3, 4).forEach { credit ->
+                    listOf(1, 2, 3, 4, 5).forEach { credit ->
                         CreditChip(
                             value = credit,
                             isSelected = subject.credits == credit,

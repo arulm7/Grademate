@@ -147,7 +147,7 @@ fun ProfileScreen(
                         Text(
                             text = "Department: $userDepartment",
                             fontSize = 16.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
 
                         Spacer(modifier = Modifier.height(24.dp))

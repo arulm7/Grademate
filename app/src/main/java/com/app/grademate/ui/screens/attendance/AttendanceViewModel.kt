@@ -17,14 +17,15 @@ class AttendanceViewModel(private val dataStoreManager: DataStoreManager) : View
     val savedAttendance: StateFlow<Float> = dataStoreManager.getAttendance()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0f)
 
-    private val _totalClasses = MutableStateFlow(0)
+    private val _totalClasses = MutableStateFlow(10)
     val totalClasses: StateFlow<Int> = _totalClasses.asStateFlow()
 
-    private val _attendedClasses = MutableStateFlow(0)
+    private val _attendedClasses = MutableStateFlow(8)
     val attendedClasses: StateFlow<Int> = _attendedClasses.asStateFlow()
 
     private val _futureClasses = MutableStateFlow(0)
     val futureClasses: StateFlow<Int> = _futureClasses.asStateFlow()
+
 
     private val _attendancePercentage = MutableStateFlow<Float?>(null)
     val attendancePercentage: StateFlow<Float?> = _attendancePercentage.asStateFlow()
@@ -37,6 +38,10 @@ class AttendanceViewModel(private val dataStoreManager: DataStoreManager) : View
 
     private val _predictionIfMiss = MutableStateFlow<Float?>(null)
     val predictionIfMiss: StateFlow<Float?> = _predictionIfMiss.asStateFlow()
+
+    init {
+        calculatePredictions()
+    }
 
     fun updateTotalClasses(value: Int) {
         _totalClasses.value = value
