@@ -87,7 +87,6 @@ fun CircularFeatureCard(
         label = "bobbing"
     )
 
-    // Soft glow scaling
     val glowScale by infiniteTransition.animateFloat(
         initialValue = 0.95f,
         targetValue = 1.15f,
